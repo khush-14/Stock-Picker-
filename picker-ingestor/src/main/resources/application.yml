@@ -1,0 +1,48 @@
+spring:
+  application:
+    name: picker-ingestor
+
+  # --- Async Thread Pool (Virtual Threads require Java 21+) ---
+  task:
+    execution:
+      pool:
+        core-size: 10
+        max-size: 50
+        queue-capacity: 200
+      thread-name-prefix: ingestor-
+
+  # --- Database ---
+  datasource:
+    url: jdbc:postgresql://localhost:5433/stockpicker
+    username: stockpicker
+    password: stockpicker
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: false
+
+  # --- Flyway ---
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+  # --- Pulsar ---
+  pulsar:
+    client:
+      service-url: pulsar://localhost:6650
+    consumer:
+      subscription:
+        name: ingestor-subscription
+        type: shared
+
+server:
+  port: 8081
+
+logging:
+  level:
+    com.stockpicker: DEBUG
+    org.apache.pulsar: WARN
